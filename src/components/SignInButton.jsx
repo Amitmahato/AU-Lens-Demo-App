@@ -16,18 +16,28 @@ import { useRouter } from "next/router";
 export default function SignInButton() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const { defaultProfile, setDefaultProfile } = useAppContext();
+  const {
+    defaultProfile,
+    setDefaultProfile,
+    address,
+    setAddress,
+    setSignedIn,
+  } = useAppContext();
   const [isSignedInQuery, setIsSignedInQuery] = useState({
     accessToken: null,
     refreshToken: null,
     exp: null,
   });
-  const address = useAddress(); // Detect connected network
+  const _address = useAddress(); // Detect connected network
 
   const isOnWrongNetwork = useNetworkMismatch(); // Detect if the user is on wrong network
   const [, switchNetwork] = useNetwork(); // Switch to the configured network
 
-  const { requestLogin, isLoading: isLogginIn } = useLogin();
+  const { requestLogin, isLoading: isLoggingIn, loggedIn } = useLogin();
+
+  useEffect(() => {
+    setAddress(_address);
+  }, [_address]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -41,7 +51,13 @@ export default function SignInButton() {
     } else {
       setDefaultProfile(DEFAULT_PROFILE);
     }
-  }, [address, isLogginIn]);
+  }, [address, isLoggingIn]);
+
+  useEffect(() => {
+    if (loggedIn || isSignedInQuery?.accessToken) {
+      setSignedIn(true);
+    }
+  }, [loggedIn, isLoggingIn, isSignedInQuery?.accessToken]);
 
   useEffect(() => {
     setIsLoading(false);

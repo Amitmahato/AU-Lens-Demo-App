@@ -5,6 +5,7 @@ import { generateChallenge, sendSignedMessage } from "./authenticate";
 
 export const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
   const address = useAddress();
   const sdk = useSDK();
 
@@ -32,9 +33,10 @@ export const useLogin = () => {
 
     // 5. Store the Access Token in Local Storage so we can use it later on
     setAccessToken(accessToken, refreshToken);
+    setLoggedIn(true);
     setIsLoading(false);
   }
 
   // 2. Return the useMutation hook wrapping the async function
-  return { requestLogin: login, isLoading };
+  return { requestLogin: login, isLoading, loggedIn };
 };

@@ -13,6 +13,10 @@ export const DEFAULT_PROFILE = {
 
 export const AppContext = createContext({
   isLoading: false,
+  address: null,
+  setAddress: () => {},
+  signedIn: false,
+  setSignedIn: () => {},
   defaultProfile: DEFAULT_PROFILE,
   setDefaultProfile: () => {},
 });

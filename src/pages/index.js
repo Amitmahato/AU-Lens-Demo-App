@@ -5,14 +5,14 @@ import { useRouter } from "next/router";
 
 export default function Home() {
   const { push } = useRouter();
-  const { defaultProfile } = useAppContext();
+  const { defaultProfile, signedIn } = useAppContext();
 
-  if (!defaultProfile.id) {
+  if (!defaultProfile.id || !signedIn) {
     return <SignInButton />;
   }
 
   // if default user doesn't have any post yet, take the user to create posts page
-  if (defaultProfile.stats.postsTotal === 0) {
+  if (signedIn && defaultProfile.stats.postsTotal === 0) {
     push("/posts/create");
   }
 
