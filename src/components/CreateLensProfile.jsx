@@ -2,8 +2,11 @@ import { useState, useEffect, useDeferredValue } from "react";
 import { Button, Input, Spin } from "antd";
 import { createProfile, getProfileByHandle } from "@/lib/auth/profile";
 import { message } from "antd";
+import { Counter } from "./Counter";
+import { useRouter } from "next/router";
 
 export const CreateLensProfile = () => {
+  const router = useRouter();
   const [inputHandle, setInputHanlde] = useState("");
   const [errors, setErrors] = useState([]);
   const [showError, setShowError] = useState(false);
@@ -27,9 +30,6 @@ export const CreateLensProfile = () => {
       );
     }
     setErrors(errors);
-    if (success?.length > 0) {
-      setSuccess("");
-    }
   }, [inputHandle]);
 
   useEffect(() => {
@@ -67,6 +67,9 @@ export const CreateLensProfile = () => {
           value={inputHandle}
           onChange={(e) => {
             setInputHanlde(e.target.value.toLowerCase());
+            if (success?.length > 0) {
+              setSuccess("");
+            }
           }}
           onBlur={() => setShowError(true)}
           type="text"
@@ -96,6 +99,16 @@ export const CreateLensProfile = () => {
               {success}
             </a>
           </p>
+          <div>
+            {"Redirecting you to home page in "}
+            <Counter
+              timeOutDuration={5}
+              callbackFunction={() => {
+                router.push("/");
+              }}
+            />
+            {" seconds!"}
+          </div>
         </div>
       )}
       <ol className="text-red-400 text-xs flex flex-col justify-center items-start mt-2 w-full">

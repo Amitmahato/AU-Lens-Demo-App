@@ -11,9 +11,10 @@ import { useLogin } from "../lib/auth/useLogin";
 import { DEFAULT_PROFILE, useAppContext } from "@/lib/appContext";
 import { useEffect, useState } from "react";
 import { Button, Spin } from "antd";
-import { CreateLensProfile } from "./CreateLensProfile";
+import { useRouter } from "next/router";
 
 export default function SignInButton() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const { defaultProfile, setDefaultProfile } = useAppContext();
   const [isSignedInQuery, setIsSignedInQuery] = useState({
@@ -87,19 +88,9 @@ export default function SignInButton() {
   // 4. Show user their profile on Lens
   // If there is no profile data, it means the user doesn't have a lens handle
   if (!defaultProfile?.id) {
-    // TODO: Render a UI to allow profile creation on polygon mumbai testnet
-    return (
-      <div className="flex flex-col justify-center items-center h-full">
-        <div className="flex flex-col items-center justify-between h-1/5">
-          <div className="flex flex-col items-center">
-            <div>No Lens Profile Found!</div>
-            <div>Let us start by creating a new lens handle for you!</div>
-          </div>
-
-          <CreateLensProfile />
-        </div>
-      </div>
-    );
+    // If the user doesn't have a lens profile, navigate to create lens profile page
+    router.push("/profile/create");
+    return <Spin />;
   }
 
   // Otherwise, render the profile information
