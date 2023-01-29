@@ -6,6 +6,9 @@ export const DEFAULT_PROFILE = {
   id: null,
   name: null,
   ownedBy: null,
+  stats: {
+    postsTotal: 0,
+  },
 };
 
 export const AppContext = createContext({

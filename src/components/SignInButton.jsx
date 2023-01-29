@@ -10,7 +10,7 @@ import { getLensUser } from "@/lib/auth/getLensUser";
 import { useLogin } from "../lib/auth/useLogin";
 import { DEFAULT_PROFILE, useAppContext } from "@/lib/appContext";
 import { useEffect, useState } from "react";
-import { Button } from "antd";
+import { Button, Spin } from "antd";
 import { CreateLensProfile } from "./CreateLensProfile";
 
 export default function SignInButton() {
@@ -48,7 +48,7 @@ export default function SignInButton() {
 
   // Loading user's signed in data
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Spin />;
   }
 
   // 1. User needs to connect to their wallet
@@ -71,7 +71,7 @@ export default function SignInButton() {
 
   // 3. Sign In with Lens
   // If the user is not signed in, we need the user to sign in
-  if (!isSignedInQuery?.accessToken) {
+  if (!isLoading && !isSignedInQuery?.accessToken) {
     return (
       <Button
         onClick={() => {

@@ -8,7 +8,10 @@ import {
 export const getDefaultProfile = async (address) => {
   const response = await client.query({
     query: defaultProfile,
-    variables: { request: { ethereumAddress: address } },
+    variables: {
+      request: { ethereumAddress: address },
+      forSources: [process.env.NEXT_PUBLIC_APP_ID],
+    },
   });
 
   console.log("getDefaultProfile: ", response);
@@ -23,6 +26,9 @@ export const getDefaultProfile = async (address) => {
       id: profileData?.id,
       name: profileData?.name,
       ownedBy: profileData?.ownedBy,
+      stats: {
+        postsTotal: profileData?.stats.postsTotal,
+      },
     },
   };
 };

@@ -27,13 +27,19 @@ export const refreshDocument = gql`
 `;
 
 export const defaultProfile = gql`
-  query DefaultProfile($request: DefaultProfileRequest!) {
+  query DefaultProfile(
+    $request: DefaultProfileRequest!
+    $forSources: [Sources!]!
+  ) {
     defaultProfile(request: $request) {
       handle
       id
       name
       ownedBy
       bio
+      stats {
+        postsTotal(forSources: $forSources)
+      }
     }
   }
 `;
