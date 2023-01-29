@@ -37,3 +37,30 @@ export const defaultProfile = gql`
     }
   }
 `;
+
+export const searchProfileByHandle = gql`
+  query Search($request: SearchQueryRequest!) {
+    search(request: $request) {
+      ... on ProfileSearchResult {
+        items {
+          id
+          handle
+        }
+      }
+    }
+  }
+`;
+
+export const createProfileMutation = gql`
+  mutation CreateProfile($request: CreateProfileRequest!) {
+    createProfile(request: $request) {
+      ... on RelayerResult {
+        txHash
+        txId
+      }
+      ... on RelayError {
+        reason
+      }
+    }
+  }
+`;

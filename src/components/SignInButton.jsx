@@ -10,6 +10,8 @@ import { getLensUser } from "@/lib/auth/getLensUser";
 import { useLogin } from "../lib/auth/useLogin";
 import { DEFAULT_PROFILE, useAppContext } from "@/lib/appContext";
 import { useEffect, useState } from "react";
+import { Button } from "antd";
+import { CreateLensProfile } from "./CreateLensProfile";
 
 export default function SignInButton() {
   const [isLoading, setIsLoading] = useState(true);
@@ -57,13 +59,13 @@ export default function SignInButton() {
   // 2. User needs to switch their network to polygon
   if (isOnWrongNetwork) {
     return (
-      <button
+      <Button
         onClick={() => {
           switchNetwork?.(ChainId.Mumbai);
         }}
       >
         Switch to Polygon Mumbai
-      </button>
+      </Button>
     );
   }
 
@@ -71,13 +73,14 @@ export default function SignInButton() {
   // If the user is not signed in, we need the user to sign in
   if (!isSignedInQuery?.accessToken) {
     return (
-      <button
+      <Button
         onClick={() => {
           requestLogin();
         }}
+        className="text-white px-4 py-1 "
       >
         Sign In with Lens
-      </button>
+      </Button>
     );
   }
 
@@ -85,7 +88,18 @@ export default function SignInButton() {
   // If there is no profile data, it means the user doesn't have a lens handle
   if (!defaultProfile?.id) {
     // TODO: Render a UI to allow profile creation on polygon mumbai testnet
-    return <div>No Lens Profile Found</div>;
+    return (
+      <div className="flex flex-col justify-center items-center h-full">
+        <div className="flex flex-col items-center justify-between h-1/5">
+          <div className="flex flex-col items-center">
+            <div>No Lens Profile Found!</div>
+            <div>Let us start by creating a new lens handle for you!</div>
+          </div>
+
+          <CreateLensProfile />
+        </div>
+      </div>
+    );
   }
 
   // Otherwise, render the profile information
