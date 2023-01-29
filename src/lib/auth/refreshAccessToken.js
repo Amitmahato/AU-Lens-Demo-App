@@ -1,5 +1,11 @@
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { refreshDocument } from "../graphql";
 import { readAccessToken, setAccessToken } from "../helper";
+
+const client = new ApolloClient({
+  uri: process.env.NEXT_PUBLIC_LENS_API_ENDPOINT,
+  cache: new InMemoryCache(),
+});
 
 export default async function refreshAccessToken() {
   // 1. Get our refresh token from the local storage
@@ -7,38 +13,28 @@ export default async function refreshAccessToken() {
 
   if (!refreshToken) return null;
 
-  const fetchToken = async (query, variables, options = {}) => {
+  const fetchToken = async (variables) => {
     if (!process.env.NEXT_PUBLIC_LENS_API_ENDPOINT) {
       return null;
     }
 
-    const res = await fetch(process.env.NEXT_PUBLIC_LENS_API_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...options,
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        query,
-        variables,
-      }),
+    const res = await client.mutate({
+      mutation: refreshDocument,
+      variables,
     });
 
-    const json = await res.json();
-
-    if (json.errors) {
+    if (res.errors) {
       const { message } = json.errors[0] || {};
       throw new Error(message || "Error…");
     }
 
-    return json.data;
+    return res.data;
   };
 
   // 2. Send the refresh token to Lens to ask for new set of access/refresh token
   const {
     refresh: { accessToken, refreshToken: newRefreshToken },
-  } = await fetchToken(refreshDocument, {
+  } = await fetchToken({
     request: {
       refreshToken,
     },
@@ -47,5 +43,5 @@ export default async function refreshAccessToken() {
   // 3. Update the local storage with the new set of access and refresh token
   setAccessToken(accessToken, newRefreshToken);
 
-  return accessToken;
+  return null;
 }
