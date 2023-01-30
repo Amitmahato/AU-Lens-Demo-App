@@ -1,4 +1,6 @@
-"use client";
+import { ethers } from "ethers";
+import omitDeep from "omit-deep";
+
 const STORAGE_KEY = "AU_LENS_APP";
 
 // Simple function to say if the token is expired or not
@@ -62,3 +64,27 @@ export const parseJWT = (token) => {
 
   return JSON.parse(jsonPayload);
 };
+
+// 1. Sign typed data with omitted __typename values using omit-deep
+export function omitTypename(object) {
+  return omitDeep(object, ["__typename"]);
+}
+
+export async function signTypedDataWithOmittedTypename(
+  sdk,
+  domain,
+  types,
+  value
+) {
+  // Perform the signing using the SDK
+  return await sdk.wallet.signTypedData(
+    omitTypename(domain),
+    omitTypename(types),
+    omitTypename(value)
+  );
+}
+
+// 2. Split the signature to extract the "v", "r", and "s" values
+export function splitSignature(signature) {
+  return ethers.utils.splitSignature(signature);
+}

@@ -70,3 +70,34 @@ export const createProfileMutation = gql`
     }
   }
 `;
+
+export const createPostTypedData = gql`
+  mutation CreatePostTypedData($request: CreatePublicPostRequest!) {
+    createPostTypedData(request: $request) {
+      typedData {
+        domain {
+          chainId
+          name
+          verifyingContract
+          version
+        }
+        types {
+          PostWithSig {
+            name
+            type
+          }
+        }
+        value {
+          collectModule
+          collectModuleInitData
+          contentURI
+          deadline
+          nonce
+          profileId
+          referenceModule
+          referenceModuleInitData
+        }
+      }
+    }
+  }
+`;
