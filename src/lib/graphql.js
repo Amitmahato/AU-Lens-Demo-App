@@ -116,3 +116,66 @@ export const createPostTypedData = gql`
     }
   }
 `;
+
+export const explorePublications = gql`
+  query ExplorePublications(
+    $request: ExplorePublicationRequest!
+    $forSources: [Sources!]!
+  ) {
+    explorePublications(request: $request) {
+      pageInfo {
+        prev
+        next
+        totalCount
+      }
+      items {
+        ... on Post {
+          appId
+          createdAt
+          id
+          metadata {
+            content
+            cover {
+              original {
+                altTag
+                url
+              }
+            }
+            description
+            image
+            mainContentFocus
+            name
+          }
+          profile {
+            handle
+            id
+            name
+            picture {
+              ... on NftImage {
+                uri
+                tokenId
+              }
+              ... on MediaSet {
+                original {
+                  altTag
+                  url
+                  mimeType
+                }
+              }
+            }
+          }
+          stats {
+            commentsTotal(forSources: $forSources)
+            id
+            totalAmountOfCollects
+            totalAmountOfComments
+            totalAmountOfMirrors
+            totalUpvotes
+            totalDownvotes
+          }
+          onChainContentURI
+        }
+      }
+    }
+  }
+`;

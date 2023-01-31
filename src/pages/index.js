@@ -1,4 +1,6 @@
 "use client";
+
+import { ListOfPosts } from "@/components/PostList";
 import SignInButton from "@/components/SignInButton";
 import { useAppContext } from "@/lib/appContext";
 import { useRouter } from "next/router";
@@ -16,6 +18,13 @@ export default function Home() {
     push("/posts/create");
   }
 
-  // TODO - Display a list of posts from other users
-  return <div>List of posts</div>;
+  return (
+    <div
+      className="flex flex-col items-center px-20 py-8 h-screen w-full overflow-y-scroll"
+      id="scrollableDiv"
+    >
+      <p className="text-5xl pb-10">Lensgram</p>
+      <ListOfPosts />
+    </div>
+  );
 }
