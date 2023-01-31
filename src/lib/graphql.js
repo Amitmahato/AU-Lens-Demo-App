@@ -179,3 +179,105 @@ export const explorePublications = gql`
     }
   }
 `;
+
+export const SingleUserProfileByHandle = gql`
+  query Profile(
+    $request: SingleProfileQueryRequest!
+    $forSources: [Sources!]!
+    $mirrorsTotalForSources2: [Sources!]!
+    $postsTotalForSources2: [Sources!]!
+    $publicationsTotalForSources2: [Sources!]!
+  ) {
+    profile(request: $request) {
+      coverPicture {
+        ... on MediaSet {
+          original {
+            url
+          }
+        }
+      }
+      dispatcher {
+        address
+        canUseRelay
+      }
+      followNftAddress
+      handle
+      id
+      bio
+      interests
+      isFollowedByMe
+      isFollowing
+      name
+      metadata
+      ownedBy
+      stats {
+        totalFollowers
+        totalFollowing
+        id
+        commentsTotal(forSources: $forSources)
+        totalCollects
+        mirrorsTotal(forSources: $mirrorsTotalForSources2)
+        postsTotal(forSources: $postsTotalForSources2)
+        publicationsTotal(forSources: $publicationsTotalForSources2)
+      }
+      picture {
+        ... on MediaSet {
+          original {
+            url
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const publicationsByProfileId = gql`
+  query Publications($request: PublicationsQueryRequest!) {
+    publications(request: $request) {
+      items {
+        ... on Post {
+          appId
+          metadata {
+            content
+            image
+            mainContentFocus
+            name
+            media {
+              original {
+                altTag
+                url
+              }
+            }
+          }
+          stats {
+            totalAmountOfCollects
+            totalAmountOfComments
+            totalAmountOfMirrors
+            totalUpvotes
+            totalDownvotes
+          }
+          createdAt
+          id
+          profile {
+            id
+            name
+            handle
+            picture {
+              ... on MediaSet {
+                original {
+                  altTag
+                  url
+                }
+              }
+            }
+          }
+        }
+      }
+      pageInfo {
+        next
+        prev
+        totalCount
+      }
+    }
+  }
+`;

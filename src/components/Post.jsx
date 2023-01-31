@@ -56,15 +56,23 @@ export const Post = ({ publication }) => {
         className="flex flex-row items-center"
         avatar={
           <Link
-            className="flex flex-col justify-center"
+            className="flex flex-col justify-center items-center"
             href={`profile/${publication.profile.handle}`}
           >
-            {publication.profile.picture ? (
-              <Avatar src={publication.profile.picture} />
+            {publication.profile.picture || publication.profile.handle ? (
+              <Avatar
+                src={
+                  publication.profile.picture ??
+                  `https://robohash.org/${publication.profile.handle}.png`
+                }
+                size={50}
+              />
             ) : (
               <UserOutlined style={{ fontSize: 24 }} />
             )}
-            {`@${publication.profile.handle}`}
+            <div>
+              {publication.profile.name ?? `@${publication.profile.handle}`}
+            </div>
           </Link>
         }
         title={publication.metadata.name}
