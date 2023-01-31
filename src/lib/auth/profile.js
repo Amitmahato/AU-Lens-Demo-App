@@ -1,22 +1,25 @@
 import { client } from "../api";
 import {
   createProfileMutation,
-  defaultProfile,
+  getProfiles,
   searchProfileByHandle,
 } from "../graphql";
 
 export const getDefaultProfile = async (address) => {
   const response = await client.query({
-    query: defaultProfile,
+    query: getProfiles,
     variables: {
-      request: { ethereumAddress: address },
+      request: { ownedBy: address },
       forSources: [process.env.NEXT_PUBLIC_APP_ID],
     },
   });
 
   console.log("getDefaultProfile: ", response);
 
-  const profileData = response?.data?.defaultProfile;
+  const defaultProfile = response?.data?.profiles?.items?.find(
+    (profile) => profile.isDefault
+  );
+  const profileData = defaultProfile ?? response?.data?.profiles?.items?.[0];
 
   return {
     isLoading: response?.loading ?? false,

@@ -44,6 +44,21 @@ export const defaultProfile = gql`
   }
 `;
 
+export const getProfiles = gql`
+  query Profiles($request: ProfileQueryRequest!, $forSources: [Sources!]!) {
+    profiles(request: $request) {
+      items {
+        id
+        handle
+        isDefault
+        stats {
+          postsTotal(forSources: $forSources)
+        }
+      }
+    }
+  }
+`;
+
 export const searchProfileByHandle = gql`
   query Search($request: SearchQueryRequest!) {
     search(request: $request) {
