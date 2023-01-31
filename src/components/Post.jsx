@@ -1,13 +1,12 @@
 import { MediaRenderer } from "@thirdweb-dev/react";
 import {
-  CaretUpOutlined,
-  CaretDownOutlined,
   CommentOutlined,
-  RetweetOutlined,
+  HeartOutlined,
   MoneyCollectOutlined,
+  RetweetOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Avatar, Card } from "antd";
+import { Avatar, Card, Tooltip } from "antd";
 import { IconWithCount } from "./IconWithCount";
 import Link from "next/link";
 
@@ -15,30 +14,41 @@ export const Post = ({ publication }) => {
   return (
     <Card
       cover={
-        <MediaRenderer
-          style={{
-            objectFit: "cover",
-            height: 300,
-          }}
-          alt="Post Image"
-          src={publication.metadata.image}
-        />
+        <div className="relative">
+          <MediaRenderer
+            style={{
+              objectFit: "cover",
+              height: 300,
+            }}
+            className="w-full"
+            alt="Post Image"
+            src={publication.metadata.image}
+          />
+          <div className="absolute top-1 right-2 cursor-pointer">
+            {publication.id}
+          </div>
+        </div>
       }
       actions={[
         <IconWithCount count={publication.stats.totalUpvotes} key={0}>
-          <CaretUpOutlined />
-        </IconWithCount>,
-        <IconWithCount count={publication.stats.totalDownvotes} key={1}>
-          <CaretDownOutlined />
+          <Tooltip title="Like">
+            <HeartOutlined />
+          </Tooltip>
         </IconWithCount>,
         <IconWithCount count={publication.stats.totalAmountOfComments} key={2}>
-          <CommentOutlined />
+          <Tooltip title="Comment">
+            <CommentOutlined />
+          </Tooltip>
         </IconWithCount>,
         <IconWithCount count={publication.stats.totalAmountOfMirrors} key={3}>
-          <RetweetOutlined />
+          <Tooltip title="Mirror">
+            <RetweetOutlined />
+          </Tooltip>
         </IconWithCount>,
         <IconWithCount count={publication.stats.totalAmountOfCollects} key={4}>
-          <MoneyCollectOutlined />
+          <Tooltip title="Collect">
+            <MoneyCollectOutlined />
+          </Tooltip>
         </IconWithCount>,
       ]}
     >
