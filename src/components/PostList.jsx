@@ -30,7 +30,7 @@ export const ListOfPosts = ({ dataSource, enabled }) => {
         setLoading(false);
       })();
     }
-  }, [currentCursor, dataSource, enabled]);
+  }, [currentCursor, enabled]);
 
   const loadMoreData = () => {
     setCurrentCursor(nextCursor);

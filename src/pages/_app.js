@@ -11,6 +11,7 @@ export default function App({ Component, pageProps }) {
   const [address, setAddress] = useState(null);
   const [signedIn, setSignedIn] = useState(false);
   const [defaultProfile, setDefaultProfile] = useState(DEFAULT_PROFILE);
+  const [recommendedProfiles, setRecommendedProfiles] = useState([]);
   const [_, contextHolder] = message.useMessage();
 
   return (
@@ -25,6 +26,8 @@ export default function App({ Component, pageProps }) {
           setDefaultProfile,
           signedIn,
           setSignedIn,
+          recommendedProfiles,
+          setRecommendedProfiles,
         }}
       >
         {contextHolder}

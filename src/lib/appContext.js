@@ -24,6 +24,8 @@ export const AppContext = createContext({
   setSignedIn: () => {},
   defaultProfile: DEFAULT_PROFILE,
   setDefaultProfile: () => {},
+  recommendedProfiles: [],
+  setRecommendedProfiles: () => {},
 });
 
 export const useAppContext = () => useContext(AppContext);
@@ -38,6 +40,8 @@ export const AuthProvider = ({ value, children }) => {
     setDefaultProfile,
     signedIn,
     setSignedIn,
+    recommendedProfiles,
+    setRecommendedProfiles,
   } = value;
 
   const router = useRouter();
@@ -99,6 +103,8 @@ export const AuthProvider = ({ value, children }) => {
           setDefaultProfile,
           signedIn,
           setSignedIn,
+          recommendedProfiles,
+          setRecommendedProfiles,
         }}
       >
         {children}
