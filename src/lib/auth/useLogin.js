@@ -2,11 +2,15 @@ import { useState } from "react";
 import { useAddress, useSDK } from "@thirdweb-dev/react";
 import { setAccessToken } from "../helper";
 import { generateChallenge, sendSignedMessage } from "./authenticate";
+import { useAppContext } from "../appContext";
+import { getDefaultProfile } from "./profile";
 
 export const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
   const address = useAddress();
   const sdk = useSDK();
+  const { setDefaultProfile } = useAppContext();
 
   // 1. Write the actual async function
   async function login() {
@@ -30,11 +34,17 @@ export const useLogin = () => {
       signature,
     });
 
+    const { defaultProfile } = await getDefaultProfile(address);
+
     // 5. Store the Access Token in Local Storage so we can use it later on
     setAccessToken(accessToken, refreshToken);
+    setDefaultProfile(defaultProfile);
+    setLoggedIn(true);
     setIsLoading(false);
+
+    return defaultProfile;
   }
 
   // 2. Return the useMutation hook wrapping the async function
-  return { requestLogin: login, isLoading };
+  return { requestLogin: login, isLoading, loggedIn };
 };

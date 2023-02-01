@@ -10,23 +10,34 @@ import { getLensUser } from "@/lib/auth/getLensUser";
 import { useLogin } from "../lib/auth/useLogin";
 import { DEFAULT_PROFILE, useAppContext } from "@/lib/appContext";
 import { useEffect, useState } from "react";
-import { Button } from "antd";
-import { CreateLensProfile } from "./CreateLensProfile";
+import { Button, Spin } from "antd";
+import { useRouter } from "next/router";
 
 export default function SignInButton() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const { defaultProfile, setDefaultProfile } = useAppContext();
+  const {
+    defaultProfile,
+    setDefaultProfile,
+    address,
+    setAddress,
+    setSignedIn,
+  } = useAppContext();
   const [isSignedInQuery, setIsSignedInQuery] = useState({
     accessToken: null,
     refreshToken: null,
     exp: null,
   });
-  const address = useAddress(); // Detect connected network
+  const _address = useAddress(); // Detect connected network
 
   const isOnWrongNetwork = useNetworkMismatch(); // Detect if the user is on wrong network
   const [, switchNetwork] = useNetwork(); // Switch to the configured network
 
-  const { requestLogin, isLoading: isLogginIn } = useLogin();
+  const { requestLogin, isLoading: isLoggingIn, loggedIn } = useLogin();
+
+  useEffect(() => {
+    setAddress(_address);
+  }, [_address]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -40,7 +51,13 @@ export default function SignInButton() {
     } else {
       setDefaultProfile(DEFAULT_PROFILE);
     }
-  }, [address, isLogginIn]);
+  }, [address, isLoggingIn]);
+
+  useEffect(() => {
+    if (loggedIn || isSignedInQuery?.accessToken) {
+      setSignedIn(true);
+    }
+  }, [loggedIn, isLoggingIn, isSignedInQuery?.accessToken]);
 
   useEffect(() => {
     setIsLoading(false);
@@ -48,7 +65,7 @@ export default function SignInButton() {
 
   // Loading user's signed in data
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Spin />;
   }
 
   // 1. User needs to connect to their wallet
@@ -71,7 +88,7 @@ export default function SignInButton() {
 
   // 3. Sign In with Lens
   // If the user is not signed in, we need the user to sign in
-  if (!isSignedInQuery?.accessToken) {
+  if (!isLoading && !isSignedInQuery?.accessToken) {
     return (
       <Button
         onClick={() => {
@@ -87,19 +104,9 @@ export default function SignInButton() {
   // 4. Show user their profile on Lens
   // If there is no profile data, it means the user doesn't have a lens handle
   if (!defaultProfile?.id) {
-    // TODO: Render a UI to allow profile creation on polygon mumbai testnet
-    return (
-      <div className="flex flex-col justify-center items-center h-full">
-        <div className="flex flex-col items-center justify-between h-1/5">
-          <div className="flex flex-col items-center">
-            <div>No Lens Profile Found!</div>
-            <div>Let us start by creating a new lens handle for you!</div>
-          </div>
-
-          <CreateLensProfile />
-        </div>
-      </div>
-    );
+    // If the user doesn't have a lens profile, navigate to create lens profile page
+    router.push("/profile/create");
+    return <Spin />;
   }
 
   // Otherwise, render the profile information

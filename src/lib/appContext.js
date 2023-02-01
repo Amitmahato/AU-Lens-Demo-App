@@ -6,10 +6,17 @@ export const DEFAULT_PROFILE = {
   id: null,
   name: null,
   ownedBy: null,
+  stats: {
+    postsTotal: 0,
+  },
 };
 
 export const AppContext = createContext({
   isLoading: false,
+  address: null,
+  setAddress: () => {},
+  signedIn: false,
+  setSignedIn: () => {},
   defaultProfile: DEFAULT_PROFILE,
   setDefaultProfile: () => {},
 });

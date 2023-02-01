@@ -27,13 +27,34 @@ export const refreshDocument = gql`
 `;
 
 export const defaultProfile = gql`
-  query DefaultProfile($request: DefaultProfileRequest!) {
+  query DefaultProfile(
+    $request: DefaultProfileRequest!
+    $forSources: [Sources!]!
+  ) {
     defaultProfile(request: $request) {
       handle
       id
       name
       ownedBy
       bio
+      stats {
+        postsTotal(forSources: $forSources)
+      }
+    }
+  }
+`;
+
+export const getProfiles = gql`
+  query Profiles($request: ProfileQueryRequest!, $forSources: [Sources!]!) {
+    profiles(request: $request) {
+      items {
+        id
+        handle
+        isDefault
+        stats {
+          postsTotal(forSources: $forSources)
+        }
+      }
     }
   }
 `;
@@ -60,6 +81,37 @@ export const createProfileMutation = gql`
       }
       ... on RelayError {
         reason
+      }
+    }
+  }
+`;
+
+export const createPostTypedData = gql`
+  mutation CreatePostTypedData($request: CreatePublicPostRequest!) {
+    createPostTypedData(request: $request) {
+      typedData {
+        domain {
+          chainId
+          name
+          verifyingContract
+          version
+        }
+        types {
+          PostWithSig {
+            name
+            type
+          }
+        }
+        value {
+          collectModule
+          collectModuleInitData
+          contentURI
+          deadline
+          nonce
+          profileId
+          referenceModule
+          referenceModuleInitData
+        }
       }
     }
   }
