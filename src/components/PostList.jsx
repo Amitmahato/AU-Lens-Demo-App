@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { Post } from "@/components/Post";
 import { Divider, List, message, Skeleton } from "antd";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { FullScreenLoader } from "./FullScreenLoader";
 
 export const ListOfPosts = ({ dataSource, enabled }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [currentCursor, setCurrentCursor] = useState(null);
   const [nextCursor, setNextCursor] = useState(null);
   const [publications, setPublications] = useState([]);
@@ -34,6 +35,11 @@ export const ListOfPosts = ({ dataSource, enabled }) => {
   const loadMoreData = () => {
     setCurrentCursor(nextCursor);
   };
+
+  if (loading && !publications.length) {
+    return <FullScreenLoader />;
+  }
+
   return (
     <InfiniteScroll
       dataLength={publications.length}

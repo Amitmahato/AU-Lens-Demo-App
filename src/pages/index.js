@@ -1,5 +1,6 @@
 "use client";
 
+import { FullScreenLoader } from "@/components/FullScreenLoader";
 import { ListOfPosts } from "@/components/PostList";
 import SignInButton from "@/components/SignInButton";
 import { useAppContext } from "@/lib/appContext";
@@ -8,7 +9,11 @@ import { useRouter } from "next/router";
 
 export default function Home() {
   const { push } = useRouter();
-  const { defaultProfile, signedIn } = useAppContext();
+  const { isLoading, defaultProfile, signedIn } = useAppContext();
+
+  if (isLoading) {
+    return <FullScreenLoader />;
+  }
 
   if (!defaultProfile.id || !signedIn) {
     return <SignInButton />;
