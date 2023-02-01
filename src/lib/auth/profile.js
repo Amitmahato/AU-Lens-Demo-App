@@ -3,6 +3,7 @@ import {
   createProfileMutation,
   getProfiles,
   searchProfileByHandle,
+  SingleUserProfileByHandle,
 } from "../graphql";
 
 export const getDefaultProfile = async (address) => {
@@ -55,6 +56,56 @@ export const getProfileByHandle = async (handle) => {
   return {
     isLoading: response?.loading ?? false,
     profiles,
+  };
+};
+
+export const getSingleUserProfileByHandle = async (handle) => {
+  const response = await client.query({
+    query: SingleUserProfileByHandle,
+    variables: {
+      request: {
+        handle: handle,
+      },
+      forSources: [process.env.NEXT_PUBLIC_APP_ID],
+      mirrorsTotalForSources2: [process.env.NEXT_PUBLIC_APP_ID],
+      postsTotalForSources2: [process.env.NEXT_PUBLIC_APP_ID],
+      publicationsTotalForSources2: [process.env.NEXT_PUBLIC_APP_ID],
+    },
+  });
+
+  console.log("getProfileByHandle: ", response);
+
+  const pf = response.data.profile;
+
+  const profile = {
+    coverPicture: pf.coverPicture,
+    dispatcher: pf.dispatcher,
+    followNftAddress: pf.followNftAddress,
+    handle: pf.handle,
+    id: pf.id,
+    bio: pf.bio,
+    interests: pf.interests,
+    isFollowedByMe: pf.isFollowedByMe,
+    isFollowing: pf.isFollowing,
+    name: pf.name,
+    metadata: pf.metadata,
+    ownedBy: pf.ownedBy,
+    stats: {
+      id: pf.stats.id,
+      totalFollowers: pf.stats.totalFollowers,
+      totalFollowing: pf.stats.totalFollowing,
+      postsTotal: pf.stats.postsTotal,
+      commentsTotal: pf.stats.commentsTotal,
+      mirrorsTotal: pf.stats.mirrorsTotal,
+      publicationsTotal: pf.stats.publicationsTotal,
+      totalCollects: pf.stats.totalCollects,
+    },
+    picture: pf.picture,
+  };
+
+  return {
+    isLoading: response?.loading ?? false,
+    profile: profile,
   };
 };
 

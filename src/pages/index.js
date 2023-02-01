@@ -3,6 +3,7 @@
 import { ListOfPosts } from "@/components/PostList";
 import SignInButton from "@/components/SignInButton";
 import { useAppContext } from "@/lib/appContext";
+import { getEveryonePublications } from "@/lib/publications/posts";
 import { useRouter } from "next/router";
 
 export default function Home() {
@@ -24,7 +25,10 @@ export default function Home() {
       id="scrollableDiv"
     >
       <p className="text-5xl pb-10">Lensgram</p>
-      <ListOfPosts />
+      <ListOfPosts
+        enabled={true}
+        dataSource={async (cursor) => await getEveryonePublications(cursor)}
+      />
     </div>
   );
 }

@@ -1,5 +1,9 @@
 import { client } from "../api";
-import { createPostTypedData, explorePublications } from "../graphql";
+import {
+  createPostTypedData,
+  explorePublications,
+  publicationsByProfileId,
+} from "../graphql";
 
 export const createPostTypedDataForPost = async (contentURI, profileId) => {
   try {
@@ -51,6 +55,34 @@ export const getEveryonePublications = async (cursor) => {
     });
 
     console.log("getEveryonePublications: ", response);
+
+    return {
+      isLoading: response?.loading ?? false,
+      errors: response.errors,
+      data: { publications: response.data.explorePublications },
+    };
+  } catch (error) {
+    return { errors: [error.toString()] };
+  }
+};
+
+export const getPublicationByProfileId = async (cursor, profileId) => {
+  console.log(cursor, profileId);
+  try {
+    const response = await client.mutate({
+      mutation: publicationsByProfileId,
+      variables: {
+        request: {
+          cursor: cursor,
+          limit: 10,
+          profileId: profileId,
+          publicationTypes: "POST",
+          sources: [process.env.NEXT_PUBLIC_APP_ID],
+        },
+      },
+    });
+
+    console.log("getPublicationByProfileId: ", response);
 
     return {
       isLoading: response?.loading ?? false,
