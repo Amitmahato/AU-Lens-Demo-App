@@ -9,6 +9,7 @@ import { EditOutlined } from "@ant-design/icons";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const Profile = () => {
   const router = useRouter();
@@ -42,6 +43,11 @@ const Profile = () => {
           backgroundColor: "#8b5cf6d9",
         }}
       />
+      <Link className="absolute  top-5 left-5" href="/">
+        <Button className="rounded-full bg-white text-3xl h-16 w-16 text-black">
+          ←
+        </Button>
+      </Link>
       <div className="mx-20 flex flex-row text-sm sm:text-base">
         <div className="w-1/2">
           <div className="h-40 w-40 bg-white rounded-lg overflow-hidden -mt-20 mb-10">

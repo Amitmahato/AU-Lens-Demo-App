@@ -3,6 +3,8 @@ import { Button, Input, message, Spin, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useCreatePost } from "@/lib/publications/useCreatePost";
 import { useRouter } from "next/router";
+import { useAppContext } from "@/lib/appContext";
+import Link from "next/link";
 
 export const CreatePost = () => {
   const [loading, setLoading] = useState(false);
@@ -13,6 +15,7 @@ export const CreatePost = () => {
   const [disabled, setDisabled] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
+  const { defaultProfile } = useAppContext();
 
   const { createPost } = useCreatePost();
 
@@ -48,14 +51,42 @@ export const CreatePost = () => {
   }, [title, description, content, file, loading]);
 
   return (
-    <>
+    <div className="flex flex-col h-full py-8 items-center">
       {contextHolder}
-      <div className="flex flex-col justify-between items-end w-96 h-80">
-        <div className="flex flex-col justify-start items-end w-96 h-64">
+
+      <Link className="absolute top-5 left-5" href="/">
+        <Button className="rounded-full bg-white text-3xl h-16 w-16 text-black">
+          ←
+        </Button>
+      </Link>
+      <Link href="/" className="mb-32 h-20">
+        <p className="text-5xl">Lensgram</p>
+      </Link>
+      <div className="flex flex-col justify-between items-start w-96 h-full mb-28">
+        <div className="text-3xl pb-5 text-center">
+          {defaultProfile.stats.postsTotal === 0 ? (
+            <p>
+              Let us proceed by creating your{" "}
+              <strong>
+                <i>#1st</i>
+              </strong>{" "}
+              post
+            </p>
+          ) : (
+            <p>
+              Create your{" "}
+              <strong>
+                <i>#{defaultProfile.stats.postsTotal + 1}th</i>
+              </strong>{" "}
+              post
+            </p>
+          )}
+        </div>
+        <div className="flex flex-col justify-start items-end w-96 h-full">
           {/* Title */}
           <Input
             value={title}
-            className="h-8 mb-2"
+            className="h-12 mb-2"
             placeholder="Enter post title"
             onChange={(e) => {
               setTitle(e.target.value);
@@ -64,7 +95,7 @@ export const CreatePost = () => {
 
           {/* Description */}
           <Input
-            className="h-8 mb-2"
+            className="h-12 mb-2"
             value={description}
             placeholder="Enter post description"
             onChange={(e) => {
@@ -74,7 +105,7 @@ export const CreatePost = () => {
           {/* Content */}
           <Input.TextArea
             className="h-full mb-2"
-            autoSize={{ minRows: 3, maxRows: 3 }}
+            autoSize={{ minRows: 5, maxRows: 5 }}
             value={content}
             placeholder="Enter post content"
             onChange={(e) => {
@@ -82,7 +113,7 @@ export const CreatePost = () => {
             }}
           />
 
-          <div className="self-center">
+          <div className="self-center mt-1">
             <Upload
               className="mr-0"
               name="file"
@@ -104,7 +135,7 @@ export const CreatePost = () => {
           </div>
         </div>
         <Button
-          className={`text-white disabled:text-white w-full h-10 ${
+          className={`text-white disabled:text-white w-full h-12 ${
             loading ? "pt-2 pb-0" : "p-1"
           }`}
           onClick={handlePostSubmit}
@@ -113,6 +144,6 @@ export const CreatePost = () => {
           {loading ? <Spin /> : "Submit"}
         </Button>
       </div>
-    </>
+    </div>
   );
 };

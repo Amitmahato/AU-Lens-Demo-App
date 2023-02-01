@@ -16,17 +16,6 @@ export const SideNav = ({ defaultProfile }) => {
         Home
       </Link>
       <Link
-        href={`/profile/${defaultProfile.handle}`}
-        className="flex flex-row justify-start items-center"
-      >
-        <Avatar
-          src={`https://robohash.org/${defaultProfile.handle}.png`}
-          size={40}
-          className="mr-4 bg-white border-2 p-2"
-        />
-        Profile
-      </Link>
-      <Link
         href="/posts/create"
         className="flex flex-row justify-start items-center"
       >
@@ -34,7 +23,18 @@ export const SideNav = ({ defaultProfile }) => {
           className="mr-4 rounded-lg p-2"
           style={{ fontSize: 24 }}
         />
-        Create Post
+        Create
+      </Link>
+      <Link
+        href={`/profile/${defaultProfile.handle}`}
+        className="flex flex-row justify-start items-center"
+      >
+        <Avatar
+          src={`https://robohash.org/${defaultProfile.handle}.png`}
+          size={28}
+          className="ml-2 mr-5 bg-white"
+        />
+        Profile
       </Link>
     </div>
   );
