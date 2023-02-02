@@ -1,35 +1,38 @@
 import "../styles/globals.css";
 import { ChainId, ThirdwebProvider } from "@thirdweb-dev/react";
-import { AppContext, DEFAULT_PROFILE } from "@/lib/appContext";
+import { AuthProvider, DEFAULT_PROFILE } from "@/lib/appContext";
 import { useState } from "react";
 import { message } from "antd";
 
 const activeChainId = ChainId.Mumbai;
 
 export default function App({ Component, pageProps }) {
+  const [isLoading, setLoading] = useState(true);
   const [address, setAddress] = useState(null);
   const [signedIn, setSignedIn] = useState(false);
   const [defaultProfile, setDefaultProfile] = useState(DEFAULT_PROFILE);
+  const [recommendedProfiles, setRecommendedProfiles] = useState([]);
   const [_, contextHolder] = message.useMessage();
 
   return (
     <ThirdwebProvider desiredChainId={activeChainId}>
-      <AppContext.Provider
+      <AuthProvider
         value={{
-          isLoading: false,
+          isLoading,
+          setLoading,
           address,
           setAddress,
           defaultProfile,
           setDefaultProfile,
           signedIn,
           setSignedIn,
+          recommendedProfiles,
+          setRecommendedProfiles,
         }}
       >
-        <div className="flex justify-center items-center h-screen bg-gray-800 text-white text-xl">
-          {contextHolder}
-          <Component {...pageProps} />
-        </div>
-      </AppContext.Provider>
+        {contextHolder}
+        <Component {...pageProps} />
+      </AuthProvider>
     </ThirdwebProvider>
   );
 }
