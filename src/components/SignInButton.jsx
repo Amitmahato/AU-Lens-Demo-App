@@ -6,9 +6,8 @@ import {
   useNetworkMismatch,
 } from "@thirdweb-dev/react";
 import { ChainId } from "@thirdweb-dev/sdk";
-import { getLensUser } from "@/lib/auth/getLensUser";
 import { useLogin } from "../lib/auth/useLogin";
-import { DEFAULT_PROFILE, useAppContext } from "@/lib/appContext";
+import { useAppContext } from "@/lib/appContext";
 import { useEffect, useState } from "react";
 import { Button, Spin } from "antd";
 import { useRouter } from "next/router";
@@ -16,48 +15,19 @@ import { useRouter } from "next/router";
 export default function SignInButton() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const {
-    defaultProfile,
-    setDefaultProfile,
-    address,
-    setAddress,
-    setSignedIn,
-  } = useAppContext();
-  const [isSignedInQuery, setIsSignedInQuery] = useState({
-    accessToken: null,
-    refreshToken: null,
-    exp: null,
-  });
+  const { defaultProfile, address, signedIn, setAddress } = useAppContext();
   const _address = useAddress(); // Detect connected network
 
   const isOnWrongNetwork = useNetworkMismatch(); // Detect if the user is on wrong network
   const [, switchNetwork] = useNetwork(); // Switch to the configured network
 
-  const { requestLogin, isLoading: isLoggingIn, loggedIn } = useLogin();
+  const { requestLogin } = useLogin();
 
   useEffect(() => {
-    setAddress(_address);
-  }, [_address]);
-
-  useEffect(() => {
-    setIsLoading(true);
-    if (address) {
-      (async () => {
-        const { isSignedInQuery, profileQuery } = await getLensUser(address);
-        setDefaultProfile(profileQuery.defaultProfile);
-        setIsSignedInQuery(isSignedInQuery);
-        setIsLoading(false);
-      })();
-    } else {
-      setDefaultProfile(DEFAULT_PROFILE);
+    if (!address || _address !== address) {
+      setAddress(_address);
     }
-  }, [address, isLoggingIn]);
-
-  useEffect(() => {
-    if (loggedIn || isSignedInQuery?.accessToken) {
-      setSignedIn(true);
-    }
-  }, [loggedIn, isLoggingIn, isSignedInQuery?.accessToken]);
+  }, [_address, address, setAddress]);
 
   useEffect(() => {
     setIsLoading(false);
@@ -88,11 +58,11 @@ export default function SignInButton() {
 
   // 3. Sign In with Lens
   // If the user is not signed in, we need the user to sign in
-  if (!isLoading && !isSignedInQuery?.accessToken) {
+  if (!isLoading && !signedIn) {
     return (
       <Button
-        onClick={() => {
-          requestLogin();
+        onClick={async () => {
+          await requestLogin();
         }}
         className="text-white px-4 py-1 "
       >

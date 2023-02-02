@@ -10,7 +10,7 @@ export const useLogin = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const address = useAddress();
   const sdk = useSDK();
-  const { setDefaultProfile } = useAppContext();
+  const { setDefaultProfile, setSignedIn } = useAppContext();
 
   // 1. Write the actual async function
   async function login() {
@@ -39,6 +39,7 @@ export const useLogin = () => {
     // 5. Store the Access Token in Local Storage so we can use it later on
     setAccessToken(accessToken, refreshToken);
     setDefaultProfile(defaultProfile);
+    setSignedIn(true);
     setLoggedIn(true);
     setIsLoading(false);
 

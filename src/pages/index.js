@@ -45,13 +45,6 @@ function Home() {
     return <FullScreenLoader />;
   }
 
-  // if default user doesn't have any post yet, take the user to create posts page
-  if (signedIn && defaultProfile.stats.postsTotal === 0) {
-    push("/posts/create");
-  }
-
-  console.log(defaultProfile.handle);
-
   return (
     defaultProfile.stats.postsTotal !== 0 && (
       <>

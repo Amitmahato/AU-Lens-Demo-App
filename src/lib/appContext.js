@@ -1,8 +1,10 @@
+import { CreateLensProfile } from "@/components/CreateLensProfile";
+import { CreatePost } from "@/components/CreatePost";
 import { FullScreenLoader } from "@/components/FullScreenLoader";
 import SignInButton from "@/components/SignInButton";
 import { useAddress } from "@thirdweb-dev/react";
 import { useRouter } from "next/router";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 import { getLensUser } from "./auth/getLensUser";
 
 export const DEFAULT_PROFILE = {
@@ -46,12 +48,11 @@ export const AuthProvider = ({ value, children }) => {
 
   const router = useRouter();
   const _address = useAddress();
-  const [timeout, setTimeOut] = useState(null);
 
   useEffect(() => {
     console.info("Address: ", _address);
     setLoading(true);
-    if (_address) {
+    if (_address && !signedIn) {
       (async () => {
         const { isSignedInQuery, profileQuery } = await getLensUser(_address);
         setAddress(_address);
@@ -63,24 +64,11 @@ export const AuthProvider = ({ value, children }) => {
         setDefaultProfile(profileQuery.defaultProfile);
         setLoading(false);
       })();
-    } else {
-      // always display loader for some time, to let address get initialized
-      setLoading(true);
-      setDefaultProfile(DEFAULT_PROFILE);
-      const _timeout = setTimeout(() => {
-        // if address is not found even after 2 seconds, hider loader and continue
-        setLoading(false);
-      }, 2000);
-      timeout && clearTimeout(timeout);
-      setTimeOut(_timeout);
-
-      return () => {
-        clearTimeout(timeout);
-      };
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setLoading(false);
   }, [
     _address,
+    signedIn,
     setDefaultProfile,
     setAddress,
     setLoading,
@@ -115,21 +103,19 @@ export const AuthProvider = ({ value, children }) => {
 
 export const withPrivateRoute = (AuthComponent) => {
   function PrivateComponent({ children }) {
-    const { isLoading, defaultProfile, signedIn, address } =
-      useContext(AppContext);
+    const { defaultProfile, signedIn, address } = useContext(AppContext);
 
-    if (isLoading) {
-      return <FullScreenLoader />;
+    if (!address || !signedIn) {
+      return <SignInButton />;
+    } else {
+      if (!defaultProfile.id) {
+        return <CreateLensProfile />;
+      } else if (defaultProfile.stats.postsTotal === 0) {
+        return <CreatePost />;
+      } else {
+        return children;
+      }
     }
-    return (
-      <>
-        {!!address && !!defaultProfile.id && signedIn ? (
-          <>{children}</>
-        ) : (
-          <SignInButton />
-        )}
-      </>
-    );
   }
 
   return class Higher extends React.Component {
