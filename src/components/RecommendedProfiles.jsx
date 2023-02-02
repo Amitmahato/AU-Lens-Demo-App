@@ -1,23 +1,32 @@
 import { useAppContext } from "@/lib/appContext";
-import { Avatar, Button } from "antd";
+import { Avatar } from "antd";
 import Link from "next/link";
+import { Follow } from "./Follow";
 
 export const RecommendedProfiles = ({ recommendedProfiles }) => {
-  const { defaultProfile } = useAppContext();
+  const { setRecommendedProfiles } = useAppContext();
+
+  const onFollowToggle = (profile) => {
+    console.log("Following the user: ", profile.handle);
+    // After logged in user follows someone, update their profile's isFollowedByMe
+    setRecommendedProfiles((recommendedProfiles) => {
+      const followedProfileIndex = recommendedProfiles.findIndex(
+        (rcProfile) => profile.id === rcProfile.id
+      );
+      const followedProfile = recommendedProfiles[followedProfileIndex];
+      followedProfile.isFollowedByMe = true;
+
+      return recommendedProfiles.map((profile) =>
+        profile.id === followedProfile.id ? followedProfile : profile
+      );
+    });
+  };
+
   return (
     <div>
       <div>✨ Who To Follow</div>
       <div className="flex flex-col justify-start rounded-md border-gray-200 border-2 h-auto w-80 mt-4">
         {recommendedProfiles.map((profile, index) => {
-          let followButtonContent;
-          if (profile.isFollowedByMe) {
-            followButtonContent = "Following";
-          } else if (profile.isFollowing) {
-            followButtonContent = "Follow Back";
-          } else if (profile.handle !== defaultProfile.handle) {
-            console.log(profile.handle, defaultProfile.handle);
-            followButtonContent = "Follow";
-          }
           return (
             <div
               key={profile.id}
@@ -42,11 +51,7 @@ export const RecommendedProfiles = ({ recommendedProfiles }) => {
                   <div>@{profile.handle}</div>
                 </div>
               </Link>
-              {followButtonContent && (
-                <div className="items-center justify-center">
-                  <Button className="text-white mr-5">Follow</Button>
-                </div>
-              )}
+              <Follow profile={profile} onFollowToggle={onFollowToggle} />
             </div>
           );
         })}

@@ -6,14 +6,11 @@ import { RecommendedProfiles } from "@/components/RecommendedProfiles";
 import { SideNav } from "@/components/SideNav";
 import { useAppContext, withPrivateRoute } from "@/lib/appContext";
 import { getEveryonePublications } from "@/lib/publications/posts";
-import { useRouter } from "next/router";
 
 function Home() {
-  const { push } = useRouter();
   const {
     isLoading,
     defaultProfile,
-    signedIn,
     recommendedProfiles,
     setRecommendedProfiles,
   } = useAppContext();
