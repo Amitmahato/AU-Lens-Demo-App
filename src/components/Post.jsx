@@ -2,6 +2,7 @@ import { MediaRenderer } from "@thirdweb-dev/react";
 import {
   CommentOutlined,
   HeartOutlined,
+  HeartFilled,
   MoneyCollectOutlined,
   RetweetOutlined,
   UserOutlined,
@@ -9,8 +10,27 @@ import {
 import { Avatar, Card, Tooltip } from "antd";
 import { IconWithCount } from "./IconWithCount";
 import Link from "next/link";
+import { reactToPost } from "@/lib/publications/posts";
+import { useState } from "react";
+import { useAppContext } from "@/lib/appContext";
 
-export const Post = ({ publication }) => {
+export const Post = ({ publication, onReact = () => {} }) => {
+  const { defaultProfile } = useAppContext();
+  const [addingReaction, setAddingReaction] = useState(false);
+
+  const onClickLike = async () => {
+    const reactionType =
+      publication.reaction === "UPVOTE" ? "DOWNVOTE" : "UPVOTE";
+    setAddingReaction(true);
+    await reactToPost({
+      profileId: defaultProfile.id,
+      publicationId: publication.id,
+      reactionType,
+    });
+    onReact(publication.id, reactionType);
+    setAddingReaction(false);
+  };
+
   return (
     <Card
       cover={
@@ -30,9 +50,20 @@ export const Post = ({ publication }) => {
         </div>
       }
       actions={[
-        <IconWithCount count={publication.stats.totalUpvotes} key={0}>
-          <Tooltip title="Like">
-            <HeartOutlined />
+        <IconWithCount
+          count={publication.stats.totalUpvotes}
+          key={0}
+          onClick={onClickLike}
+          loading={addingReaction}
+        >
+          <Tooltip
+            title={publication.reaction !== "UPVOTE" ? "Like" : "Dislike"}
+          >
+            {publication.reaction !== "UPVOTE" ? (
+              <HeartOutlined />
+            ) : (
+              <HeartFilled style={{ color: "rgb(59,130,246)" }} />
+            )}
           </Tooltip>
         </IconWithCount>,
         <IconWithCount count={publication.stats.totalAmountOfComments} key={2}>

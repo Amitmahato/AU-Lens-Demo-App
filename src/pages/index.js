@@ -16,7 +16,7 @@ function Home() {
   } = useAppContext();
 
   const getPublications = async (cursor) => {
-    const response = await getEveryonePublications(cursor);
+    const response = await getEveryonePublications(cursor, defaultProfile.id);
     if (response.data) {
       // Set unique new profiles as recommended profiles as more and more contents are loaded
       const profileIds = recommendedProfiles.map((profile) => profile.id);

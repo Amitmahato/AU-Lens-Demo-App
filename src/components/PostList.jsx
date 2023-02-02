@@ -32,6 +32,27 @@ export const ListOfPosts = ({ dataSource, enabled }) => {
     }
   }, [currentCursor, enabled]);
 
+  const onReactOnPublication = (publicationId, reactionType) => {
+    const reactedPublicationIndex = publications.findIndex(
+      (publication) => publication.id === publicationId
+    );
+    const reactedPublication = publications[reactedPublicationIndex];
+
+    reactedPublication.reaction = reactionType;
+    if (reactionType === "UPVOTE") {
+      reactedPublication.stats.totalUpvotes += 1;
+      reactedPublication.stats.totalDownvotes -= 1;
+    } else {
+      reactedPublication.stats.totalDownvotes += 1;
+      reactedPublication.stats.totalUpvotes -= 1;
+    }
+
+    setPublications((publications) => {
+      publications[reactedPublicationIndex] = reactedPublication;
+      return publications;
+    });
+  };
+
   const loadMoreData = () => {
     setCurrentCursor(nextCursor);
   };
@@ -68,7 +89,7 @@ export const ListOfPosts = ({ dataSource, enabled }) => {
         key={(publication) => publication.id}
         renderItem={(publication) => (
           <div className="mt-5">
-            <Post publication={publication} />
+            <Post publication={publication} onReact={onReactOnPublication} />
           </div>
         )}
       />

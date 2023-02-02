@@ -15,7 +15,10 @@ import { Follow } from "@/components/Follow";
 const Profile = () => {
   const router = useRouter();
   const handle = router.query.handle;
+  const { defaultProfile } = useAppContext();
   const [profile, setProfile] = useState({});
+
+  console.log("DEFAULT PROFILE: ", defaultProfile.id);
 
   useEffect(() => {
     if (handle) {
@@ -126,9 +129,13 @@ const Profile = () => {
             }))}
           />
           <ListOfPosts
-            enabled={!!profile.id}
+            enabled={!!profile.id && !!defaultProfile.id}
             dataSource={async (cursor) =>
-              await getPublicationByProfileId(cursor, profile.id)
+              await getPublicationByProfileId(
+                cursor,
+                profile.id,
+                defaultProfile.id
+              )
             }
           />
         </div>
