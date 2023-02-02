@@ -1,12 +1,23 @@
+import { useAppContext } from "@/lib/appContext";
 import { Avatar, Button } from "antd";
 import Link from "next/link";
 
 export const RecommendedProfiles = ({ recommendedProfiles }) => {
+  const { defaultProfile } = useAppContext();
   return (
     <div>
       <div>✨ Who To Follow</div>
       <div className="flex flex-col justify-start rounded-md border-gray-200 border-2 h-auto w-80 mt-4">
         {recommendedProfiles.map((profile, index) => {
+          let followButtonContent;
+          if (profile.isFollowedByMe) {
+            followButtonContent = "Following";
+          } else if (profile.isFollowing) {
+            followButtonContent = "Follow Back";
+          } else if (profile.handle !== defaultProfile.handle) {
+            console.log(profile.handle, defaultProfile.handle);
+            followButtonContent = "Follow";
+          }
           return (
             <div
               key={profile.id}
@@ -31,9 +42,11 @@ export const RecommendedProfiles = ({ recommendedProfiles }) => {
                   <div>@{profile.handle}</div>
                 </div>
               </Link>
-              <div className="items-center justify-center">
-                <Button className="text-white mr-5">Follow</Button>
-              </div>
+              {followButtonContent && (
+                <div className="items-center justify-center">
+                  <Button className="text-white mr-5">Follow</Button>
+                </div>
+              )}
             </div>
           );
         })}

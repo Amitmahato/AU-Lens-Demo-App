@@ -150,6 +150,8 @@ export const explorePublications = gql`
             handle
             id
             name
+            isFollowedByMe
+            isFollowing
             picture {
               ... on NftImage {
                 uri
