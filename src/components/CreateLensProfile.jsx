@@ -37,7 +37,10 @@ export const CreateLensProfile = () => {
       setLoading(true);
       (async () => {
         const foundProfiles = await getProfileByHandle(searchProfileHanle);
-        if (foundProfiles.profiles.length > 0) {
+        const handleMatch = foundProfiles.profiles.some(
+          (profile) => profile.handle === `${searchProfileHanle}.test`
+        );
+        if (foundProfiles.profiles.length > 0 && handleMatch) {
           setErrors(["already_taken"]);
         }
         setShowError(true);
