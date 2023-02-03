@@ -37,7 +37,10 @@ export const CreateLensProfile = () => {
       setLoading(true);
       (async () => {
         const foundProfiles = await getProfileByHandle(searchProfileHanle);
-        if (foundProfiles.profiles.length > 0) {
+        const handleMatch = foundProfiles.profiles.some(
+          (profile) => profile.handle === `${searchProfileHanle}.test`
+        );
+        if (foundProfiles.profiles.length > 0 && handleMatch) {
           setErrors(["already_taken"]);
         }
         setShowError(true);
@@ -60,78 +63,87 @@ export const CreateLensProfile = () => {
   };
 
   return (
-    <div className="flex flex-col justify-start items-start w-full h-1/2">
-      {contextHolder}
-      <div className="flex flex-row justify-between items-start w-full">
-        <Input
-          value={inputHandle}
-          onChange={(e) => {
-            setInputHanlde(e.target.value.toLowerCase());
-            if (success?.length > 0) {
-              setSuccess("");
-            }
-          }}
-          onBlur={() => setShowError(true)}
-          type="text"
-          placeholder="Enter a handle"
-          className="font-sans text-black"
-        />
-        <Button
-          disabled={loading || success?.length || errors.length > 0}
-          className="ml-4 text-white disabled:text-white"
-          onClick={onSubmit}
-        >
-          Submit
-        </Button>
-      </div>
-      {!loading && success?.length > 0 && (
-        <div className="text-green-500 text-xs flex flex-col justify-center items-start mt-2 w-full">
-          <p>
-            Successfully created your lens handle: <i>{searchProfileHanle}</i>
-          </p>
-          <p>
-            {"View transaction on Polyscan: "}
-            <a
-              target="_blank"
-              rel="noreferrer"
-              href={`${process.env.NEXT_PUBLIC_POLYSCAN_API}/tx/${success}`}
-            >
-              {success}
-            </a>
-          </p>
-          <div>
-            {"Redirecting you to home page in "}
-            <Counter
-              timeOutDuration={5}
-              callbackFunction={() => {
-                router.push("/");
-              }}
-            />
-            {" seconds!"}
-          </div>
+    <div className="flex flex-col justify-center items-center h-full">
+      <div className="flex flex-col items-center justify-between h-1/5">
+        <div className="flex flex-col items-center">
+          <div>No Lens Profile Found!</div>
+          <div>Let us start by creating a new lens handle for you!</div>
         </div>
-      )}
-      <ol className="text-red-400 text-xs flex flex-col justify-center items-start mt-2 w-full">
-        {loading ? (
-          <div className="self-center">
-            <Spin />
+        <div className="flex flex-col justify-start items-start w-full h-1/2">
+          {contextHolder}
+          <div className="flex flex-row justify-between items-start w-full">
+            <Input
+              value={inputHandle}
+              onChange={(e) => {
+                setInputHanlde(e.target.value.toLowerCase());
+                if (success?.length > 0) {
+                  setSuccess("");
+                }
+              }}
+              onBlur={() => setShowError(true)}
+              type="text"
+              placeholder="Enter a handle"
+              className="font-sans text-black"
+            />
+            <Button
+              disabled={loading || success?.length || errors.length > 0}
+              className="ml-4 text-white disabled:text-white"
+              onClick={onSubmit}
+            >
+              Submit
+            </Button>
           </div>
-        ) : (
-          showError &&
-          errors.map((error, index) => (
-            <li key={error}>
-              {error === "already_taken" ? (
-                <span>
-                  {index + 1}. Lens handle <i>{searchProfileHanle}</i> already
-                  taken! Please try another handle.
-                </span>
-              ) : (
-                `${index + 1}. ${error}`
-              )}
-            </li>
-          ))
-        )}
-      </ol>
+          {!loading && success?.length > 0 && (
+            <div className="text-green-500 text-xs flex flex-col justify-center items-start mt-2 w-full">
+              <p>
+                Successfully created your lens handle:{" "}
+                <i>{searchProfileHanle}</i>
+              </p>
+              <p>
+                {"View transaction on Polyscan: "}
+                <a
+                  target="_blank"
+                  rel="noreferrer"
+                  href={`${process.env.NEXT_PUBLIC_POLYSCAN_API}/tx/${success}`}
+                >
+                  {success}
+                </a>
+              </p>
+              <div>
+                {"Redirecting you to home page in "}
+                <Counter
+                  timeOutDuration={5}
+                  callbackFunction={() => {
+                    router.push("/");
+                  }}
+                />
+                {" seconds!"}
+              </div>
+            </div>
+          )}
+          <ol className="text-red-400 text-xs flex flex-col justify-center items-start mt-2 w-full">
+            {loading ? (
+              <div className="self-center">
+                <Spin />
+              </div>
+            ) : (
+              showError &&
+              errors.map((error, index) => (
+                <li key={error}>
+                  {error === "already_taken" ? (
+                    <span>
+                      {index + 1}. Lens handle <i>{searchProfileHanle}</i>{" "}
+                      already taken! Please try another handle.
+                    </span>
+                  ) : (
+                    `${index + 1}. ${error}`
+                  )}
+                </li>
+              ))
+            )}
+          </ol>
+        </div>
+      </div>
     </div>
   );
 };

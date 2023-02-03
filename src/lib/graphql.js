@@ -121,6 +121,7 @@ export const explorePublications = gql`
   query ExplorePublications(
     $request: ExplorePublicationRequest!
     $forSources: [Sources!]!
+    $reactionRequest2: ReactionFieldResolverRequest
   ) {
     explorePublications(request: $request) {
       pageInfo {
@@ -150,6 +151,8 @@ export const explorePublications = gql`
             handle
             id
             name
+            isFollowedByMe
+            isFollowing
             picture {
               ... on NftImage {
                 uri
@@ -164,6 +167,7 @@ export const explorePublications = gql`
               }
             }
           }
+          reaction(request: $reactionRequest2)
           stats {
             commentsTotal(forSources: $forSources)
             id
@@ -232,7 +236,10 @@ export const SingleUserProfileByHandle = gql`
 `;
 
 export const publicationsByProfileId = gql`
-  query Publications($request: PublicationsQueryRequest!) {
+  query Publications(
+    $request: PublicationsQueryRequest!
+    $reactionRequest2: ReactionFieldResolverRequest
+  ) {
     publications(request: $request) {
       items {
         ... on Post {
@@ -249,6 +256,7 @@ export const publicationsByProfileId = gql`
               }
             }
           }
+          reaction(request: $reactionRequest2)
           stats {
             totalAmountOfCollects
             totalAmountOfComments
@@ -279,5 +287,40 @@ export const publicationsByProfileId = gql`
         totalCount
       }
     }
+  }
+`;
+
+export const createFollowTypedData = gql`
+  mutation createFollowTypedData($request: FollowRequest!) {
+    createFollowTypedData(request: $request) {
+      id
+      expiresAt
+      typedData {
+        domain {
+          name
+          chainId
+          version
+          verifyingContract
+        }
+        types {
+          FollowWithSig {
+            name
+            type
+          }
+        }
+        value {
+          nonce
+          deadline
+          profileIds
+          datas
+        }
+      }
+    }
+  }
+`;
+
+export const addReactionToPost = gql`
+  mutation AddReaction($request: ReactionRequest!) {
+    addReaction(request: $request)
   }
 `;

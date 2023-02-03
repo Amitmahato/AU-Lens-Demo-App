@@ -10,12 +10,15 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Follow } from "@/components/Follow";
 
 const Profile = () => {
   const router = useRouter();
   const handle = router.query.handle;
-  const [profile, setProfile] = useState({});
   const { defaultProfile } = useAppContext();
+  const [profile, setProfile] = useState({});
+
+  console.log("DEFAULT PROFILE: ", defaultProfile.id);
 
   useEffect(() => {
     if (handle) {
@@ -25,15 +28,6 @@ const Profile = () => {
       })();
     }
   }, [handle]);
-
-  let followButtonContent;
-  if (profile.isFollowedByMe) {
-    followButtonContent = "Following";
-  } else if (profile.isFollowing) {
-    followButtonContent = "Follow Back";
-  } else if (handle !== defaultProfile.handle) {
-    followButtonContent = "Follow";
-  }
 
   return (
     <div className="w-full h-screen overflow-y-scroll" id="scrollableDiv">
@@ -66,11 +60,17 @@ const Profile = () => {
               <div className="text-2xl">{profile.name}</div>
               <div>@{profile.handle}</div>
             </div>
-            {followButtonContent && (
-              <div className="ml-7 w-1/2">
-                <Button className="text-white ">{followButtonContent}</Button>
-              </div>
-            )}
+            <div className="ml-7 w-1/2">
+              <Follow
+                profile={profile}
+                onFollowToggle={() => {
+                  setProfile((profile) => {
+                    profile.isFollowedByMe = true;
+                    return profile;
+                  });
+                }}
+              />
+            </div>
           </div>
           <div className="flex flex-col font-sans space-y-5 mt-10">
             {/* Following & Followers */}
@@ -129,9 +129,13 @@ const Profile = () => {
             }))}
           />
           <ListOfPosts
-            enabled={!!profile.id}
+            enabled={!!profile.id && !!defaultProfile.id}
             dataSource={async (cursor) =>
-              await getPublicationByProfileId(cursor, profile.id)
+              await getPublicationByProfileId(
+                cursor,
+                profile.id,
+                defaultProfile.id
+              )
             }
           />
         </div>

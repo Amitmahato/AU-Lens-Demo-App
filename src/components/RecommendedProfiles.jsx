@@ -1,7 +1,27 @@
-import { Avatar, Button } from "antd";
+import { useAppContext } from "@/lib/appContext";
+import { Avatar } from "antd";
 import Link from "next/link";
+import { Follow } from "./Follow";
 
 export const RecommendedProfiles = ({ recommendedProfiles }) => {
+  const { setRecommendedProfiles } = useAppContext();
+
+  const onFollowToggle = (profile) => {
+    console.log("Following the user: ", profile.handle);
+    // After logged in user follows someone, update their profile's isFollowedByMe
+    setRecommendedProfiles((recommendedProfiles) => {
+      const followedProfileIndex = recommendedProfiles.findIndex(
+        (rcProfile) => profile.id === rcProfile.id
+      );
+      const followedProfile = recommendedProfiles[followedProfileIndex];
+      followedProfile.isFollowedByMe = true;
+
+      return recommendedProfiles.map((profile) =>
+        profile.id === followedProfile.id ? followedProfile : profile
+      );
+    });
+  };
+
   return (
     <div>
       <div>✨ Who To Follow</div>
@@ -31,9 +51,7 @@ export const RecommendedProfiles = ({ recommendedProfiles }) => {
                   <div>@{profile.handle}</div>
                 </div>
               </Link>
-              <div className="items-center justify-center">
-                <Button className="text-white mr-5">Follow</Button>
-              </div>
+              <Follow profile={profile} onFollowToggle={onFollowToggle} />
             </div>
           );
         })}

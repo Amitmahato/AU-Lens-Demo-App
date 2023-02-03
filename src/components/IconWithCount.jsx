@@ -1,7 +1,14 @@
-export const IconWithCount = ({ children, count, onClick }) => {
+import { Spin } from "antd";
+
+export const IconWithCount = ({
+  children,
+  count,
+  loading = false,
+  onClick,
+}) => {
   return (
     <div className="flex flex-col justify-center" onClick={onClick}>
-      {children} {count}
+      <div>{loading ? <Spin size="small" /> : children}</div> <div>{count}</div>
     </div>
   );
 };

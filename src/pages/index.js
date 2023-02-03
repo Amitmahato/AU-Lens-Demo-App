@@ -6,20 +6,17 @@ import { RecommendedProfiles } from "@/components/RecommendedProfiles";
 import { SideNav } from "@/components/SideNav";
 import { useAppContext, withPrivateRoute } from "@/lib/appContext";
 import { getEveryonePublications } from "@/lib/publications/posts";
-import { useRouter } from "next/router";
 
 function Home() {
-  const { push } = useRouter();
   const {
     isLoading,
     defaultProfile,
-    signedIn,
     recommendedProfiles,
     setRecommendedProfiles,
   } = useAppContext();
 
   const getPublications = async (cursor) => {
-    const response = await getEveryonePublications(cursor);
+    const response = await getEveryonePublications(cursor, defaultProfile.id);
     if (response.data) {
       // Set unique new profiles as recommended profiles as more and more contents are loaded
       const profileIds = recommendedProfiles.map((profile) => profile.id);
@@ -44,13 +41,6 @@ function Home() {
   if (isLoading) {
     return <FullScreenLoader />;
   }
-
-  // if default user doesn't have any post yet, take the user to create posts page
-  if (signedIn && defaultProfile.stats.postsTotal === 0) {
-    push("/posts/create");
-  }
-
-  console.log(defaultProfile.handle);
 
   return (
     defaultProfile.stats.postsTotal !== 0 && (
